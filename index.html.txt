@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>noto CONAN 诺途客：交互式品牌信息图</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Modernist Red -->
+    <!-- Application Structure Plan: A single-page, vertical-scrolling infographic with a fixed top navigation bar. The information architecture is designed as a persuasive narrative for investors: 1. Hero Section: A bold hook with the core investment thesis. 2. Market Overview: Presents the 'Why now?' with key statistics (market size, growth) and trends. 3. Brand DNA: A clear, two-column layout visually explaining the core 'noto' (art) and 'CONAN' (intellect) pillars. 4. Strategic Execution: Uses interactive tabs to cleanly present Product Strategy, Category Expansion, and Brand Assets without overwhelming the user. 5. Competitive Landscape: A radar chart visually demonstrates the brand's superior positioning. 6. Investment Proposition: Summarizes the key value points and ends with a strong call-to-action. This structure prioritizes clarity, impact, and a logical flow over mirroring the original report's linear format, making it far more digestible and persuasive. -->
+    <!-- Visualization & Content Choices: 
+        - Market Size Stat: Goal: Inform/Impress. Viz: Large animated number. Interaction: Counts up on scroll. Justification: Creates a dynamic and memorable data point. Method: JS Intersection Observer. CONFIRMING NO SVG/Mermaid.
+        - Consumer Demographics: Goal: Inform. Viz: Donut Chart. Interaction: Hover to see details. Justification: Visually represents the composition of the target market effectively. Method: Chart.js (Canvas). CONFIRMING NO SVG/Mermaid.
+        - Competitive Advantage: Goal: Compare. Viz: Radar Chart. Interaction: Hover to compare against a generic competitor. Justification: Provides a quick, powerful visual summary of the brand's unique strengths across key vectors. Method: Chart.js (Canvas). CONFIRMING NO SVG/Mermaid.
+        - Brand DNA Diagram: Goal: Organize/Explain. Viz: Two-column HTML/CSS layout with Unicode icons. Interaction: Static visual. Justification: Clearly separates and explains the two core brand concepts. Method: HTML/Tailwind. CONFIRMING NO SVG/Mermaid.
+        - Product Strategy Flow: Goal: Organize. Viz: Interactive HTML tabs. Interaction: Click to switch content. Justification: Condenses complex information into a user-controlled, digestible format. Method: Vanilla JS. CONFIRMING NO SVG/Mermaid.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body { font-family: 'Noto Sans SC', sans-serif; background-color: #F8F9FA; color: #212529; }
+        .brand-red { color: #C8102E; }
+        .bg-brand-red { background-color: #C8102E; }
+        .border-brand-red { border-color: #C8102E; }
+        html { scroll-behavior: smooth; }
+        .chart-container { position: relative; width: 100%; max-width: 450px; margin-left: auto; margin-right: auto; height: 350px; }
+        .section-title { font-size: 2.25rem; font-weight: 700; text-align: center; margin-bottom: 1rem; }
+        .section-subtitle { font-size: 1.125rem; text-align: center; max-width: 600px; margin: 0 auto 4rem auto; color: #6C757D; }
+        .card { background-color: #FFFFFF; border-radius: 0.75rem; padding: 2rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); transition: all 0.3s ease-in-out; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        @media (min-width: 768px) {
+            .chart-container { height: 400px; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header id="header" class="bg-white/90 backdrop-blur-lg fixed top-0 left-0 right-0 z-50 shadow-sm transition-shadow duration-300">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#hero" class="text-2xl font-bold tracking-wider text-neutral-800">noto CONAN <span class="text-xs font-light text-neutral-500">诺途客</span></a>
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-neutral-600">
+                <a href="#opportunity" class="hover:brand-red transition-colors duration-300">市场机遇</a>
+                <a href="#dna" class="hover:brand-red transition-colors duration-300">品牌DNA</a>
+                <a href="#strategy" class="hover:brand-red transition-colors duration-300">核心战略</a>
+                <a href="#advantage" class="hover:brand-red transition-colors duration-300">竞争优势</a>
+            </div>
+            <a href="#investment" class="bg-brand-red text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-opacity-90 transition-all duration-300 shadow-md hover:shadow-lg">投资合作</a>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="min-h-screen flex items-center bg-gray-100 pt-20">
+            <div class="container mx-auto px-6 text-center">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-neutral-900">投资智性艺术生活新范式</h1>
+                <p class="mt-6 text-lg md:text-xl text-neutral-600 max-w-3xl mx-auto">noto CONAN 诺途客，融合欧洲古典艺术与现代智性探索精神，正在开创一个高增长、高溢价的全新消费市场。</p>
+                <div class="mt-12">
+                    <a href="#opportunity" class="bg-neutral-800 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-neutral-900 transition-transform duration-300 transform hover:scale-105 shadow-lg">探索品牌价值 ➔</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="opportunity" class="py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">崛起中的市场机遇</h2>
+                <p class="section-subtitle">消费者正从基础功能转向追求个性化、高品质与文化内涵。noto CONAN精准切入这一蓝海，迎合新一代消费主力的核心诉求。</p>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="card lg:col-span-2 p-8 flex flex-col justify-center text-center">
+                         <p class="text-lg text-neutral-500">中国箱包市场规模 (2023)</p>
+                         <p id="market-size-counter" class="text-7xl font-bold my-4 brand-red" data-target="2349">0</p>
+                         <p class="text-xl text-neutral-600">亿元 (同比增长<span class="font-semibold">12.60%</span>)</p>
+                         <p class="mt-4 text-sm text-neutral-500">数据来源：行业报告，显示市场潜力巨大</p>
+                    </div>
+                     <div class="card flex flex-col">
+                        <h3 class="text-xl font-bold mb-4">核心驱动力</h3>
+                        <div class="space-y-4 text-neutral-600">
+                           <p><span class="font-bold brand-red">● 消费升级:</span> 年轻一代为品牌故事、情感连接和自我实现买单。</p>
+                           <p><span class="font-bold brand-red">● 精准客群:</span> 锁定18-45岁高消费潜力、高社交分享意愿的都市核心人群。</p>
+                           <p><span class="font-bold brand-red">● 场景契合:</span> 聚焦旅行、摄影等现代生活场景，产品即社交货币。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="dna" class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">品牌DNA: 艺术与智慧的独特融合</h2>
+                <p class="section-subtitle">noto CONAN 的核心价值，源于两个强大文化符号的灵感碰撞，构建了难以复制的品牌护城河。</p>
+                <div class="grid md:grid-cols-2 gap-8 mt-16">
+                    <div class="card border-t-4 border-brand-red">
+                        <div class="text-4xl mb-4">🎨</div>
+                        <h3 class="text-2xl font-bold mb-2">"noto": 巴洛克艺术的灵魂</h3>
+                        <p class="text-neutral-600">源自意大利“巴洛克之都”诺托古城，赋予品牌深厚的艺术底蕴。我们提炼其精致、华丽、充满生命力的精神，融入现代设计，创造兼具古典韵味与时尚感的作品。</p>
+                    </div>
+                    <div class="card border-t-4 border-neutral-800">
+                         <div class="text-4xl mb-4">🧠</div>
+                        <h3 class="text-2xl font-bold mb-2">"CONAN": 智慧探索的内核</h3>
+                        <p class="text-neutral-600">借力柯南·道尔的全球知名度，为品牌注入智慧、严谨和探索的基因。这体现在产品的巧妙功能、人性化细节和对品质的严苛把控中，鼓励消费者在平凡生活中探索不凡。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="strategy" class="py-24">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">核心战略: 构建智性艺术生活生态</h2>
+                <p class="section-subtitle">从核心产品到社群运营，我们通过多维度战略布局，将品牌理念转化为真实的商业价值。</p>
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="card p-0 overflow-hidden">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-4">产品与运营矩阵</h3>
+                        </div>
+                        <div id="tabs-container" class="px-6">
+                            <div class="border-b border-gray-200">
+                                <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                                    <button class="tab-button whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm border-brand-red brand-red" data-target="tab1">核心产品</button>
+                                    <button class="tab-button whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="tab2">品类协同</button>
+                                    <button class="tab-button whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" data-target="tab3">社群运营</button>
+                                </nav>
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <div id="tab1" class="tab-content">
+                                <h4 class="text-lg font-semibold">简约智能双肩背包</h4>
+                                <p class="mt-2 text-neutral-600 text-sm">战略聚焦于高频使用、高契合度的智能背包。融合简约美学与智能功能，解决用户痛点，快速建立品牌认知。</p>
+                            </div>
+                            <div id="tab2" class="tab-content hidden">
+                                 <h4 class="text-lg font-semibold">构建完整生活方式版图</h4>
+                                <p class="mt-2 text-neutral-600 text-sm">通过珠宝(格调)、服装(渗透)、箱包(专业)等多品类协同，打造完整的品牌生态。</p>
+                            </div>
+                            <div id="tab3" class="tab-content hidden">
+                                 <h4 class="text-lg font-semibold">诺途客俱乐部</h4>
+                                <p class="mt-2 text-neutral-600 text-sm">通过会员制和专属活动，构建深度用户关系，提升粘性与忠诚度，活化品牌故事。</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-bold mb-4 text-center">目标消费者画像</h3>
+                        <p class="text-center text-sm text-neutral-500 mb-4">精准锁定高消费潜力、高社交分享意愿的都市核心人群。</p>
+                        <div class="chart-container">
+                            <canvas id="audienceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="advantage" class="py-24 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="section-title">竞争优势与投资价值</h2>
+                <p class="section-subtitle">独特的品牌定位和强大的运营实力，预示着noto CONAN广阔的财务增长空间。</p>
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="card">
+                         <h3 class="text-xl font-bold mb-4 text-center">竞争优势雷达图</h3>
+                         <p class="text-center text-sm text-neutral-500 mb-4">对比一般生活品牌，noto CONAN在品牌独特性与社群深度上优势明显。</p>
+                         <div class="chart-container">
+                            <canvas id="competitorChart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-6">核心投资价值</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <h4 class="font-semibold brand-red">● 高溢价能力</h4>
+                                <p class="text-neutral-600 text-sm">独特的“智性艺术”定位使其能够摆脱价格竞争，支撑更高的利润空间。</p>
+                            </div>
+                             <div class="p-4 bg-gray-50 rounded-lg">
+                                <h4 class="font-semibold brand-red">● 高用户忠诚度</h4>
+                                <p class="text-neutral-600 text-sm">品牌故事和社群运营吸引并留住忠实消费者，形成稳定复购，降低营销成本。</p>
+                            </div>
+                             <div class="p-4 bg-gray-50 rounded-lg">
+                                <h4 class="font-semibold brand-red">● 广阔增长空间</h4>
+                                <p class="text-neutral-600 text-sm">随着品牌知名度提升及多品类落地，在国内外市场均具备巨大增长潜力。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="investment" class="py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="text-3xl md:text-5xl font-bold text-neutral-900">投资一个引领未来的品牌</h2>
+                <p class="mt-6 max-w-3xl mx-auto text-neutral-600">我们相信，投资noto CONAN 诺途客，就是投资一个能够持续创造不凡、引领潮流、并与消费者共鸣成长的未来品牌。我们诚挚邀请您进一步了解noto CONAN，共同开启这段智性艺术的非凡旅程。</p>
+                <div class="mt-12">
+                     <a href="#investment" class="bg-brand-red text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-opacity-90 transition-transform duration-300 transform hover:scale-105 shadow-lg">获取详细商业计划书</a>
+                    <p class="text-sm mt-4 text-neutral-500">联系邮箱: investor@notoconan.com</p>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-white py-8 border-t border-gray-200">
+        <div class="container mx-auto px-6 text-center text-neutral-500 text-sm">
+            <p>&copy; 2025 noto CONAN 诺途客. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chartFont = { family: "'Noto Sans SC', sans-serif" };
+
+            const setupCounter = () => {
+                const counterElement = document.getElementById('market-size-counter');
+                if (!counterElement) return;
+
+                const animateCounter = (elem) => {
+                    const target = +elem.dataset.target;
+                    let current = 0;
+                    const duration = 2000;
+                    const stepTime = 20;
+                    const steps = duration / stepTime;
+                    const increment = target / steps;
+                    
+                    const updateCounter = () => {
+                        current += increment;
+                        if (current < target) {
+                            elem.innerText = Math.ceil(current).toLocaleString();
+                            setTimeout(updateCounter, stepTime);
+                        } else {
+                            elem.innerText = target.toLocaleString();
+                        }
+                    };
+                    updateCounter();
+                    elem.dataset.animated = 'true';
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !entry.target.dataset.animated) {
+                            animateCounter(entry.target);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.5 });
+                observer.observe(counterElement);
+            };
+
+            const setupTabs = () => {
+                const tabsContainer = document.getElementById('tabs-container');
+                if (!tabsContainer) return;
+                
+                const tabButtons = tabsContainer.querySelectorAll('.tab-button');
+                const tabContents = document.querySelectorAll('.tab-content');
+
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        tabButtons.forEach(btn => {
+                            btn.classList.remove('border-brand-red', 'brand-red');
+                            btn.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300');
+                        });
+                        button.classList.add('border-brand-red', 'brand-red');
+                        button.classList.remove('border-transparent', 'text-gray-500');
+                        
+                        const targetId = button.dataset.target;
+                        tabContents.forEach(content => {
+                            content.classList.toggle('hidden', content.id !== targetId);
+                        });
+                    });
+                });
+            };
+            
+            const createAudienceChart = () => {
+                const ctx = document.getElementById('audienceChart');
+                if (!ctx) return;
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['18-28岁 青年', '29-38岁 城市白领', '39-45岁 创业青年'],
+                        datasets: [{
+                            label: '目标消费者占比',
+                            data: [45, 35, 20],
+                            backgroundColor: ['#C8102E', '#212529', '#ADB5BD'],
+                            borderColor: '#FFFFFF',
+                            borderWidth: 2,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: chartFont } },
+                            tooltip: {
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        const item = tooltipItems[0];
+                                        let label = item.chart.data.labels[item.dataIndex] || '';
+                                        if (Array.isArray(label)) { return label.join(' '); }
+                                        return label;
+                                    },
+                                    label: (context) => `${context.label}: ${context.parsed}%`
+                                }
+                            }
+                        }
+                    }
+                });
+            };
+
+            const createCompetitorChart = () => {
+                const ctx = document.getElementById('competitorChart');
+                if (!ctx) return;
+                 new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['品牌DNA', '产品创新', '社群运营', '视觉识别', '市场潜力'],
+                        datasets: [{
+                            label: 'noto CONAN 诺途客',
+                            data: [9, 8, 8, 9, 8.5],
+                            fill: true,
+                            backgroundColor: 'rgba(200, 16, 46, 0.2)',
+                            borderColor: '#C8102E',
+                            pointBackgroundColor: '#C8102E',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#C8102E'
+                        }, {
+                            label: '一般生活品牌',
+                            data: [5, 6, 4, 6, 7],
+                            fill: true,
+                            backgroundColor: 'rgba(33, 37, 41, 0.2)',
+                            borderColor: '#212529',
+                            pointBackgroundColor: '#212529',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#212529'
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { font: chartFont } },
+                            tooltip: {
+                                callbacks: {
+                                    title: function(tooltipItems) {
+                                        const item = tooltipItems[0];
+                                        let label = item.chart.data.labels[item.dataIndex] || '';
+                                        if (Array.isArray(label)) { return label.join(' '); }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            r: {
+                                beginAtZero: true, max: 10,
+                                grid: { color: '#E9ECEF' },
+                                angleLines: { color: '#E9ECEF' },
+                                pointLabels: { font: { size: 12, ...chartFont } }
+                            }
+                        }
+                    }
+                });
+            };
+
+            setupCounter();
+            setupTabs();
+            createAudienceChart();
+            createCompetitorChart();
+        });
+    </script>
+</body>
+</html>
